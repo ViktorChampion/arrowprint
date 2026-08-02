@@ -1,0 +1,66 @@
+{
+  "scopeName": "source.arrowprint",
+  "name": "ArrowPrint",
+  "fileTypes": [".arp"],
+  "patterns": [
+    {
+      "name": "comment.line.arrowprint",
+      "match": "#.*$"
+    },
+    {
+      "name": "string.quoted.double.arrowprint",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.arrowprint",
+          "match": "\\\\[nt\\\\\"]"
+        }
+      ]
+    },
+    {
+      "name": "constant.numeric.arrowprint",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
+    },
+    {
+      "name": "keyword.direction.arrowprint",
+      "match": "[><^v/\\\\()]"
+    },
+    {
+      "name": "keyword.stack.arrowprint",
+      "match": "[?':~$@!_∑∏∞]"
+    },
+    {
+      "name": "keyword.math.arrowprint",
+      "match": "[+\\-*;%&|]"
+    },
+    {
+      "name": "keyword.conditional.arrowprint",
+      "match": "[{}]"
+    },
+    {
+      "name": "keyword.compare.arrowprint",
+      "match": "(==|=|<>|<=?|>=?)"
+    },
+    {
+      "name": "keyword.array.arrowprint",
+      "match": "[\\[\\]|]"
+    },
+    {
+      "name": "keyword.contain.arrowprint",
+      "match": "№"
+    },
+    {
+      "name": "keyword.input.arrowprint",
+      "match": ","
+    },
+    {
+      "name": "keyword.stop.arrowprint",
+      "match": "@@"
+    },
+    {
+      "name": "keyword.any.arrowprint",
+      "match": "."
+    }
+  ]
+}

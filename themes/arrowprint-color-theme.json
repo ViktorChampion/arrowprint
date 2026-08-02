@@ -1,0 +1,96 @@
+{
+  "name": "ArrowPrint Colorful",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#1e1e1e"
+  },
+  "tokenColors": [
+    {
+      "name": "Комментарии",
+      "scope": "comment.line.arrowprint",
+      "settings": {
+        "foreground": "#6A9955",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "Строки",
+      "scope": "string.quoted.double.arrowprint",
+      "settings": {
+        "foreground": "#CE9178"
+      }
+    },
+    {
+      "name": "Числа",
+      "scope": "constant.numeric.arrowprint",
+      "settings": {
+        "foreground": "#B5CEA8"
+      }
+    },
+    {
+      "name": "Направление",
+      "scope": "keyword.direction.arrowprint",
+      "settings": {
+        "foreground": "#569CD6",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "Стек",
+      "scope": "keyword.stack.arrowprint",
+      "settings": {
+        "foreground": "#D7BA7D"
+      }
+    },
+    {
+      "name": "Математика",
+      "scope": "keyword.math.arrowprint",
+      "settings": {
+        "foreground": "#C586C0"
+      }
+    },
+    {
+      "name": "Условия",
+      "scope": "keyword.conditional.arrowprint",
+      "settings": {
+        "foreground": "#FFD700"
+      }
+    },
+    {
+      "name": "Сравнение",
+      "scope": "keyword.compare.arrowprint",
+      "settings": {
+        "foreground": "#9CDCFE"
+      }
+    },
+    {
+      "name": "Массивы",
+      "scope": "keyword.array.arrowprint",
+      "settings": {
+        "foreground": "#4EC9B0"
+      }
+    },
+    {
+      "name": "Вхождение",
+      "scope": "keyword.contain.arrowprint",
+      "settings": {
+        "foreground": "#CE9178"
+      }
+    },
+    {
+      "name": "Ввод",
+      "scope": "keyword.input.arrowprint",
+      "settings": {
+        "foreground": "#FF6B6B"
+      }
+    },
+    {
+      "name": "Остановка",
+      "scope": "keyword.stop.arrowprint",
+      "settings": {
+        "foreground": "#FF0000",
+        "fontStyle": "bold underline"
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "name": "arrowprint",
+  "displayName": "ArrowPrint",
+  "description": "Language support for ArrowPrint esoteric language",
+  "version": "0.0.1",
+  "publisher": "viktorchampion",
+  "author": "Viktor_Champion",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:arrowprint",
+    "onCommand:arrowprint.runCode"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "arrowprint",
+        "aliases": ["ArrowPrint", "arrowprint"],
+        "extensions": [".arp"]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "arrowprint",
+        "scopeName": "source.arrowprint",
+        "path": "./syntaxes/arrowprint.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "arrowprint.runCode",
+        "title": "Run ArrowPrint Code",
+        "icon": "$(play)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "arrowprint.runCode",
+          "group": "navigation",
+          "when": "resourceExtname == .arp"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "ArrowPrint",
+      "properties": {
+        "arrowprint.interpreter": {
+          "type": "string",
+          "default": "interpreter.py",
+          "description": "Name of the ArrowPrint interpreter Python file"
+        }
+      }
+    }
+  }
+}
