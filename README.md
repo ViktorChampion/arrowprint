@@ -1,8 +1,10 @@
 # ArrowPrint
+
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Python](https://img.shields.io/badge/python-3.6+-green)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
+
 **ArrowPrint** is an esoteric programming language inspired by 2D languages such as Befunge. The program is a two-dimensional grid of characters, and execution is performed by moving through this grid in a specific direction. The language is based on a stack architecture and includes many operators for navigation, stack operations, arithmetic, conditionals, and type conversions.
 
 ---
