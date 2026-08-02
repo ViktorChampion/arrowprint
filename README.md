@@ -138,9 +138,7 @@ MIT
 
 ## Links
 
-- GitHub: [your-repo-link]
-- Documentation: [your-docs-link]
-- Community: [your-discord/telegram]
+I **don't** have for now, maybe
 
 ---
 
@@ -289,9 +287,7 @@ MIT
 
 ## Ссылки
 
-- GitHub: [ссылка на репозиторий]
-- Документация: [ссылка на документацию]
-- Сообщество: [ссылка на Discord/Telegram]
+У меня пока этого **нет**, наверное
 
 ---
 
