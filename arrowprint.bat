@@ -1,2 +1,2 @@
 @echo off
-python "%~dp0interpreter.py" %*
+python "C:\ArrowPrint\interpreter.py" %*

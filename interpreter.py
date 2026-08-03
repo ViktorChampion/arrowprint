@@ -1,8 +1,3 @@
-# ArrowPrint Interpreter
-# Copyright (c) 2026 Viktor
-# Licensed under MIT License
-# https://viktorchampion.github.com/arrowprint
-
 import sys
 import random
 
