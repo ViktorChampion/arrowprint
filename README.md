@@ -5,13 +5,13 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
 
-'''ArrowPrint''' is an esoteric programming language created in 2026. It is inspired by two-dimensional languages such as [[Befunge]], combining stack-based logic, non-linear execution, and minimalist syntax. The language is often described as "Befunge for those who want to write code with style and soul."
+**ArrowPrint** is an esoteric programming language created in 2026. It is inspired by two-dimensional languages such as [[Befunge]], combining stack-based logic, non-linear execution, and minimalist syntax. The language is often described as "Befunge for those who want to write code with style and soul."
 
-According to the author, every ArrowPrint program is not just an algorithm — it's a '''journey'''. Literally: the code is a two-dimensional grid through which an instruction pointer moves, executing commands along the way. This creates a "quest-like" feel, where the programmer both designs the map and navigates through it.
+According to the author, every ArrowPrint program is not just an algorithm — it's a **journey**. Literally: the code is a two-dimensional grid through which an instruction pointer moves, executing commands along the way. This creates a "quest-like" feel, where the programmer both designs the map and navigates through it.
 
 == Philosophy ==
 
-ArrowPrint was not built for practical tasks. It was built for '''the joy of coding'''. It doesn't try to replace Python, C++, or any mainstream language. Its goal is to give the programmer a sense of exploration — where every new program is a maze, and every mistake is not a bug, but an "unexpected route."
+ArrowPrint was not built for practical tasks. It was built for **the joy of coding**. It doesn't try to replace Python, C++, or any mainstream language. Its goal is to give the programmer a sense of exploration — where every new program is a maze, and every mistake is not a bug, but an "unexpected route."
 
 ''"In ArrowPrint, code is not read top-to-bottom. It is read in whatever direction you choose to go."'' — ViktorChampion
 
@@ -23,7 +23,7 @@ The language was originally written with a hard limit of 100,000 commands per pr
 
 An ArrowPrint program is a rectangular grid of symbols. Execution begins at the first arrow (<code>></code>, <code><</code>, <code>^</code>, or <code>v</code>) found in the grid. The instruction pointer moves cell by cell, and each cell contains either a command, data, or a comment.
 
-A key feature of the language is the '''absence of explicit blocks'''. Branching and loops are implemented through direction changes and conditional jumps (<code>{ }</code>).
+A key feature of the language is the **absence of explicit blocks**. Branching and loops are implemented through direction changes and conditional jumps (<code>{ }</code>).
 
 == Commands ==
 
