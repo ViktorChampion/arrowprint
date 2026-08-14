@@ -1,5 +1,6 @@
 import sys
 import random
+import time
 
 def run_arrowprint(code_str):
     lines = code_str.split('\n')
@@ -88,13 +89,12 @@ def run_arrowprint(code_str):
                 dx, dy = -dy, -dx
             elif c == '\\':
                 dx, dy = dy, dx
-            
+
             # === ТЕЛЕПОРТАЦИЯ, РАНДОМ, ИНДЕКСАЦИЯ И СРЕЗЫ ( ) ===
             elif c == '(':
                 cx, cy = x + dx, y + dy
                 content = ""
                 
-                # Читаем содержимое скобок
                 while True:
                     ensure(cy, cx)
                     if grid[cy][cx] == ')':
@@ -145,28 +145,21 @@ def run_arrowprint(code_str):
                 
                 # 3. ИНДЕКСАЦИЯ И СРЕЗЫ
                 else:
-                    # СРЕЗ (начало:конец:шаг)
                     if ':' in content:
                         parts = content.split(':')
-                        
-                        # Парсим значения
                         start = int(parts[0].strip()) if parts[0].strip() else 0
                         end = int(parts[1].strip()) if len(parts) > 1 and parts[1].strip() else len(stack)
                         step = int(parts[2].strip()) if len(parts) > 2 and parts[2].strip() else 1
                         
-                        # Отрицательные индексы
                         if start < 0:
                             start = len(stack) + start
                         if end < 0:
                             end = len(stack) + end
                         
-                        # Берем срез и перемещаем в конец
                         if 0 <= start < len(stack) and 0 <= end <= len(stack):
                             sliced = stack[start:end:step]
                             del stack[start:end:step]
                             stack.extend(sliced)
-                    
-                    # ОДИНОЧНЫЙ ИНДЕКС
                     else:
                         try:
                             idx = int(content)
@@ -181,6 +174,42 @@ def run_arrowprint(code_str):
                             stack.append(0)
                     
                     x, y = cx, cy
+                    continue
+            
+            # === РАНДОМ (число|число) ===
+            elif c == '(' and x + 1 < len(grid[y]) and grid[y][x + 1] == '|':
+                cx, cy = x + 2, y
+                a_str = ""
+                b_str = ""
+                
+                while cy < len(grid) and cx < len(grid[cy]) and grid[cy][cx].isdigit():
+                    a_str += grid[cy][cx]
+                    cx += 1
+                
+                if cx < len(grid[cy]) and grid[cy][cx] == '|':
+                    cx += 1
+                    while cy < len(grid) and cx < len(grid[cy]) and grid[cy][cx].isdigit():
+                        b_str += grid[cy][cx]
+                        cx += 1
+                    
+                    if cx < len(grid[cy]) and grid[cy][cx] == ')':
+                        a = int(a_str) if a_str else 0
+                        b = int(b_str) if b_str else 9
+                        
+                        if a <= b:
+                            low, high = a, b
+                        else:
+                            low, high = b, a
+                        
+                        stack.append(random.randint(low, high))
+                        x, y = cx, cy
+                        continue
+                    else:
+                        stack.append(0)
+                        x, y = cx - 1, cy
+                        continue
+                else:
+                    x, y = x + 1, y
                     continue
             
             # === ИНДЕКСАЦИЯ [ ] ===
@@ -273,7 +302,32 @@ def run_arrowprint(code_str):
                 
                 x, y = cx, cy
                 continue
-            
+            # === GET (g) ===
+            elif c == 'g':
+                if len(stack) >= 2:
+                    y = stack.pop()
+                    x = stack.pop()
+                    if 0 <= y < len(grid) and 0 <= x < len(grid[y]):
+                        ch = grid[y][x]
+                        stack.append(ch if ch != ' ' else '')
+                    else:
+                        stack.append('')
+
+            # === PUT (p) ===
+            elif c == 'p':
+                if len(stack) >= 3:
+                    y = stack.pop()
+                    x = stack.pop()
+                    v = stack.pop()
+                    if isinstance(v, str):
+                        ch = v[0] if v else ' '
+                    else:
+                        ch = chr(v % 256)
+                    while y >= len(grid):
+                        grid.append([])
+                    while x >= len(grid[y]):
+                        grid[y].append(' ')
+                    grid[y][x] = ch
             # === ВЫВОД (1 символ) ===
             elif c == '?':
                 if stack:
@@ -336,8 +390,7 @@ def run_arrowprint(code_str):
                         bn = float(b) if not isinstance(b, (int, float)) else b
                         stack.append(bn ** an)
                     except:
-                        stack.append(b)
-                        stack.append(a)
+                        stack.append(0)
                     x, y = x + 1, y
                     continue
             
@@ -350,21 +403,18 @@ def run_arrowprint(code_str):
                         an = float(a) if not isinstance(a, (int, float)) else a
                         bn = float(b) if not isinstance(b, (int, float)) else b
                         if an != 0:
-                            result = bn ** (1.0 / an)
-                            stack.append(result)
+                            stack.append(bn ** (1.0 / an))
                         else:
                             stack.append(0)
                     except:
-                        stack.append(b)
-                        stack.append(a)
+                        stack.append(0)
                 elif stack:
                     v = stack.pop()
                     try:
                         vn = float(v) if not isinstance(v, (int, float)) else v
                         stack.append(vn ** 0.5)
                     except:
-                        stack.append(v)
-            
+                        stack.append(0)
             # === МАТЕМАТИКА (7 символов) ===
             elif c in '+-*;%&|':
                 if len(stack) >= 2:
@@ -372,34 +422,68 @@ def run_arrowprint(code_str):
                     b = stack.pop()
                     
                     try:
-                        an = float(a) if not isinstance(a, (int, float)) else a
-                        bn = float(b) if not isinstance(b, (int, float)) else b
+                        # Обработка сложения строк
+                        if c == '+':
+                            if isinstance(a, str) or isinstance(b, str):
+                                stack.append(str(b) + str(a))
+                            else:
+                                stack.append(b + a)
+                            continue
+                        
+                        try:
+                            an = float(a) if not isinstance(a, (int, float)) else a
+                            bn = float(b) if not isinstance(b, (int, float)) else b
+                        except:
+                            stack.append(0)
+                            continue
+                        
+                        if c == '-':
+                            stack.append(bn - an)
+                        elif c == '*':
+                            stack.append(bn * an)
+                        elif c == ';':
+                            if an != 0:
+                                stack.append(bn / an)
+                            else:
+                                stack.append(0)
+                        elif c == '%':
+                            if an != 0:
+                                stack.append(bn % an)
+                            else:
+                                stack.append(0)
+                        elif c == '&':
+                            # ОБЪЕДИНЕНИЕ
+                            str_a = str(a)
+                            str_b = str(b)
+                            
+                            if isinstance(a, float) and isinstance(b, float):
+                                combined_str = str(a) + str(b)
+                                parts = combined_str.split('.')
+                                if len(parts) > 2:
+                                    combined_str = parts[0] + '.' + ''.join(parts[1:])
+                                try:
+                                    stack.append(float(combined_str))
+                                except:
+                                    stack.append(combined_str)
+                            else:
+                                result_str = str_b + str_a
+                                try:
+                                    if '.' in result_str:
+                                        stack.append(float(result_str))
+                                    else:
+                                        stack.append(int(result_str))
+                                except:
+                                    stack.append(result_str)
+                        # === ОБМЕН ДВУХ ВЕРХНИХ ЭЛЕМЕНТОВ (|) ===
+                        elif c == '|':
+                            if len(stack) >= 2:
+                                a = stack.pop()
+                                b = stack.pop()
+                                stack.append(a)
+                                stack.append(b)
+                            # Если меньше 2 элементов — ничего не делаем
                     except:
-                        stack.append(b)
-                        stack.append(a)
-                        continue
-                    
-                    if c == '+':
-                        stack.append(bn + an)
-                    elif c == '-':
-                        stack.append(bn - an)
-                    elif c == '*':
-                        stack.append(bn * an)
-                    elif c == ';':
-                        if an != 0:
-                            stack.append(bn / an)
-                        else:
-                            stack.append(0)
-                    elif c == '%':
-                        if an != 0:
-                            stack.append(bn % an)
-                        else:
-                            stack.append(0)
-                    elif c == '&':
-                        stack.append(int(bn) & int(an))
-                    elif c == '|':
-                        stack.append(int(bn) | int(an))
-            
+                        stack.append(0)
             # === СТРОКИ (1 символ - только ") ===
             elif c == '"':
                 q = c
@@ -471,16 +555,12 @@ def run_arrowprint(code_str):
                 cond = cond.strip()
                 result = False
                 
-                # === № (вхождение) ===
                 if cond.startswith('№'):
                     rest = cond[1:].strip()
-                    
                     if rest and stack:
                         last = str(stack[-1])
-                        
                         if rest.startswith('"') and rest.endswith('"'):
                             rest = rest[1:-1]
-                        
                         if cond.startswith('№№'):
                             result = rest in last
                         else:
@@ -492,8 +572,6 @@ def run_arrowprint(code_str):
                             result = b in a
                         else:
                             result = b.lower() in a.lower()
-                
-                # === == (строгое сравнение) ===
                 elif cond.startswith('=='):
                     rest = cond[2:].strip()
                     if rest and stack:
@@ -509,8 +587,6 @@ def run_arrowprint(code_str):
                                 result = False
                     elif len(stack) >= 2:
                         result = str(stack[-2]) == str(stack[-1])
-                
-                # === = (нестрогое сравнение) ===
                 elif cond.startswith('='):
                     rest = cond[1:].strip()
                     if rest and stack:
@@ -533,8 +609,6 @@ def run_arrowprint(code_str):
                             result = float(a) == float(b)
                         except:
                             result = str(a).lower() == str(b).lower()
-                
-                # === < (меньше) ===
                 elif cond.startswith('<'):
                     rest = cond[1:].strip()
                     if rest and stack:
@@ -549,8 +623,6 @@ def run_arrowprint(code_str):
                             result = float(stack[-2]) < float(stack[-1])
                         except:
                             result = False
-                
-                # === > (больше) ===
                 elif cond.startswith('>'):
                     rest = cond[1:].strip()
                     if rest and stack:
@@ -565,8 +637,6 @@ def run_arrowprint(code_str):
                             result = float(stack[-2]) > float(stack[-1])
                         except:
                             result = False
-                
-                # === ; (делимость) ===
                 elif cond.startswith(';'):
                     rest = cond[1:].strip()
                     if rest and stack:
@@ -585,8 +655,6 @@ def run_arrowprint(code_str):
                                 result = (a / b) % 1 == 0
                         except:
                             result = False
-                
-                # === {} (проверка на != 0) ===
                 else:
                     if stack:
                         last = stack[-1]
@@ -695,14 +763,12 @@ def run_arrowprint(code_str):
             
             # === @ - ПРЕОБРАЗОВАНИЕ И ОСТАНОВКА ===
             elif c == '@':
-                # Сначала проверяем, не остановка ли это @@
                 nx, ny = x + dx, y + dy
                 if ny >= 0 and nx >= 0:
                     ensure(ny, nx)
                     if grid[ny][nx] == '@':
                         break
                 
-                # Если не остановка - проверяем модификаторы
                 if stack:
                     v = stack.pop()
                     nx, ny = x + dx, y + dy
@@ -710,7 +776,6 @@ def run_arrowprint(code_str):
                         ensure(ny, nx)
                         mod = grid[ny][nx]
                         
-                        # @! - преобразование в целое число
                         if mod == '!':
                             try:
                                 if isinstance(v, str):
@@ -727,13 +792,11 @@ def run_arrowprint(code_str):
                             x, y = nx, ny
                             continue
                         
-                        # @$ - преобразование в строку
                         elif mod == '$':
                             stack.append(str(v))
                             x, y = nx, ny
                             continue
                         
-                        # @? - преобразование в число с плавающей точкой
                         elif mod == '?':
                             try:
                                 if isinstance(v, str):
@@ -760,7 +823,7 @@ def run_arrowprint(code_str):
                                 stack.append(0.0)
                             x, y = nx, ny
                             continue
-                        # @~ - старое поведение (авто-преобразование)
+                        
                         elif mod == '~':
                             if isinstance(v, (int, float)):
                                 stack.append(str(v))
@@ -771,8 +834,21 @@ def run_arrowprint(code_str):
                                     stack.append(v)
                             x, y = nx, ny
                             continue
+                        # @^ - в верхний регистр
+                        elif mod == '^':
+                            if stack:
+                                v = stack.pop()
+                                stack.append(str(v).upper())
+                            x, y = nx, ny
+                            continue
                         
-                        # Если модификатор не распознан - пропускаем
+                        # @v - в нижний регистр
+                        elif mod == 'v':
+                            if stack:
+                                v = stack.pop()
+                                stack.append(str(v).lower())
+                            x, y = nx, ny
+                            continue
                         else:
                             stack.append(v)
                             x, y = nx, ny
@@ -789,15 +865,14 @@ def run_arrowprint(code_str):
                 break
     except KeyboardInterrupt:
         sys.exit(0)
-def main():
+
+if __name__ == "__main__":
     try:
         if len(sys.argv) > 1:
-            # Режим 1: Запуск файла
             with open(sys.argv[1], 'r', encoding='utf-8') as f:
                 code = f.read()
             run_arrowprint(code)
         else:
-            # Режим 2: Интерактивный режим (REPL)
             print("ArrowPrint Interactive Mode (v1.0)")
             print("Type 'exit' to quit. Use '\\' at end of line for multi-line.")
             print("-" * 40)
@@ -806,15 +881,11 @@ def main():
                 lines = []
                 try:
                     line = input(">>> ")
-                    
-                    # Проверка на выход
                     if line.strip().lower() in ['exit', 'quit']:
                         print("Goodbye!")
                         break
                     
                     lines.append(line)
-                    
-                    # Если строка заканчивается на \, продолжаем ввод
                     while line.endswith('\\'):
                         line = input("... ")
                         if line.strip().lower() in ['exit', 'quit']:
@@ -823,7 +894,6 @@ def main():
                     
                     if lines:
                         code = '\n'.join(lines)
-                        # Убираем символы \ в конце строк
                         code = code.replace('\\\n', '\n')
                         run_arrowprint(code)
                         print()
@@ -842,5 +912,3 @@ def main():
     except FileNotFoundError:
         print(f"File not found: {sys.argv[1]}")
         sys.exit(1)
-if __name__ == "__main__":
-    main()
